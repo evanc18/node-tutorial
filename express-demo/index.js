@@ -1,12 +1,40 @@
+const config = require('config')
 const express = require('express');
-const Joi = require('joi')
+const Joi = require('joi');
+const logger = require('./logger');
+const helmet = require('helmet');
+const morgan = require('morgan');
 
 const app = express();
-app.use(express.json()); //Middleware
-
 
 //PORT as ENV variable
 const port = process.env.PORT || 3000
+
+
+//Config
+console.log('Application Name: ' + config.get('name'));
+console.log('Mail Server: ' + config.get('mail.host'))
+console.log('Mail Password: ' + config.get('mail.password'))
+console.log(`Node is ${process.env.NODE_ENV}`);
+const env = app.get('env') //Same thing as above, but will return "development" by default if not set
+
+//Middleware
+app.use(express.json()); 
+//app.use(express.urlencoded()) 
+app.use(express.static('public'))
+app.use(logger);
+app.use(helmet());
+
+if(env === 'development'){
+    app.use(morgan('tiny'));
+    console.log("Morgan enabled...")
+}
+app.use(function(req, res, next) {
+    console.log('Authenticating...');
+    next();
+})
+
+
 
 const courses = [
     {id: 1, name: 'math'},
