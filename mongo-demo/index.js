@@ -32,7 +32,9 @@ async function createCourse(){
 async function getCourse(){
     try{
         const courses = await Course
-            .find({author:'Evan', isPublished:true})
+            //.find({author:'Evan', isPublished:true})
+            //.find({price: { $gt: 10, $lt: 20 }}) //mongoose query operators
+            .find({price: { $in: [10, 15, 20]}}) 
             .limit(10)
             .sort({ name: 1 })
             .select({ name: 1, tags: 1 })
